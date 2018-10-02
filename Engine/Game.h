@@ -24,7 +24,7 @@
 #include "Mouse.h"
 #include "Graphics.h"
 #include "FrameTimer.h"
-#include "Sound.h"
+#include "Ball.h"
 
 class Game
 {
@@ -35,11 +35,9 @@ public:
 	void Go();
 private:
 	void ComposeFrame();
-	void UpdateModel( float dt );
+	void UpdateModel();
 	/********************************/
 	/*  User Functions              */
-	void StartRound();
-	void ResetBall();
 	/********************************/
 private:
 	MainWindow& wnd;
@@ -47,5 +45,6 @@ private:
 	/********************************/
 	/*  User Variables              */
 	FrameTimer ft;
+	Ball ball;
 	/********************************/
 };

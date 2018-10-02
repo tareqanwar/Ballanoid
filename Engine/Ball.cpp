@@ -12,3 +12,8 @@ void Ball::Draw(Graphics & gfx) const
 {
 	SpriteCodex::DrawBall(position, gfx);
 }
+
+void Ball::Update(float dt)
+{
+	position += velocity * dt;
+}

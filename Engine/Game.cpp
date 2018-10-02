@@ -21,31 +21,29 @@
 #include "MainWindow.h"
 #include "Game.h"
 
-Game::Game( MainWindow& wnd )
+Game::Game(MainWindow& wnd)
 	:
-	wnd( wnd ),
-	gfx( wnd )
+	wnd(wnd),
+	gfx(wnd),
+	ball(Vec2(300.0f, 300.0f), Vec2(100.0f, 100.0f))
 {
 }
 
 void Game::Go()
 {
 	gfx.BeginFrame();
-	float elapsedTime = ft.Mark();
-	while( elapsedTime > 0.0f )
-	{
-		const float dt = std::min( 0.0025f,elapsedTime );
-		UpdateModel( dt );
-		elapsedTime -= dt;
-	}
+	UpdateModel();
 	ComposeFrame();
 	gfx.EndFrame();
 }
 
-void Game::UpdateModel( float dt )
+void Game::UpdateModel( )
 {
+	const float dt = ft.Mark();
+	ball.Update(dt);
 }
 
 void Game::ComposeFrame()
 {
+	ball.Draw(gfx);
 }
