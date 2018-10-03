@@ -23,15 +23,16 @@ void Brick::ExecuteBallCollision(Ball & ball)
 {
 	assert(CheckBallCollision(ball));
 
-	if (CheckBallCollision(ball)) {
-		const Vec2 ballPosition = ball.GetPosition();
-		if (ballPosition.x >= rect.left && ballPosition.x <= rect.right)
-			ball.ReboundY();
-		else
-			ball.ReboundX();
+	const Vec2 ballPosition = ball.GetPosition();
 
-		isDestroyed = true;
-	}
+	if (std::signbit(ball.GetVelocity().x) == std::signbit((ballPosition - GetCenter()).x))
+		ball.ReboundY();
+	else if (ballPosition.x >= rect.left && ballPosition.x <= rect.right)
+		ball.ReboundY();
+	else
+		ball.ReboundX();
+
+	isDestroyed = true;
 }
 
 Vec2 Brick::GetCenter() const
