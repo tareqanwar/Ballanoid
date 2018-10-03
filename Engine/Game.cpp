@@ -20,6 +20,7 @@
  ******************************************************************************************/
 #include "MainWindow.h"
 #include "Game.h"
+#include "SpriteCodex.h"
 
 Game::Game(MainWindow& wnd)
 	:
@@ -66,46 +67,50 @@ void Game::Go()
 
 void Game::UpdateModel( float dt )
 {
-	paddle.Update(wnd.kbd, dt);
-	paddle.DoWallCollision(walls);
+	if (!isGameOver) {
+		paddle.Update(wnd.kbd, dt);
+		paddle.DoWallCollision(walls);
 
-	ball.Update(dt);
+		ball.Update(dt);
 
-	bool collissionHappened = false;
-	float currentCollissionDistanceSq;
-	int currentCollissionIndex;
+		bool collissionHappened = false;
+		float currentCollissionDistanceSq;
+		int currentCollissionIndex;
 
-	for (int i = 0; i < nBricks; i++) {
-		if (bricks[i].CheckBallCollision(ball)) {
-			const float newCollisionDistanceSq = (ball.GetPosition() - bricks[i].GetCenter()).GetLengthSq();
+		for (int i = 0; i < nBricks; i++) {
+			if (bricks[i].CheckBallCollision(ball)) {
+				const float newCollisionDistanceSq = (ball.GetPosition() - bricks[i].GetCenter()).GetLengthSq();
 
-			if (collissionHappened) {
-				if (newCollisionDistanceSq < currentCollissionDistanceSq) {
+				if (collissionHappened) {
+					if (newCollisionDistanceSq < currentCollissionDistanceSq) {
+						currentCollissionDistanceSq = newCollisionDistanceSq;
+						currentCollissionIndex = i;
+					}
+				}
+				else {
 					currentCollissionDistanceSq = newCollisionDistanceSq;
 					currentCollissionIndex = i;
+					collissionHappened = true;
 				}
 			}
-			else {
-				currentCollissionDistanceSq = newCollisionDistanceSq;
-				currentCollissionIndex = i;
-				collissionHappened = true;
-			}
 		}
-	}
 
-	if (collissionHappened) {
-		paddle.ResetCooldown();
-		bricks[currentCollissionIndex].ExecuteBallCollision(ball);
-		soundPad.Play();
-	}
+		if (collissionHappened) {
+			paddle.ResetCooldown();
+			bricks[currentCollissionIndex].ExecuteBallCollision(ball);
+			soundPad.Play();
+		}
 
-	if (ball.DoWallCollision(walls)) {
-		paddle.ResetCooldown();
-		soundBrick.Play();
-	}
+		if (ball.DoWallCollision(walls)) {
+			if (ball.GetRect().bottom >= walls.bottom)
+				isGameOver = true;
+			paddle.ResetCooldown();
+			soundBrick.Play();
+		}
 
-	if ( paddle.DoBallCollision(ball)) {
-		soundPad.Play();
+		if (paddle.DoBallCollision(ball)) {
+			soundPad.Play();
+		}
 	}
 }
 
@@ -115,5 +120,9 @@ void Game::ComposeFrame()
 	paddle.Draw(gfx);
 	for (const Brick& brick : bricks) {
 		brick.Draw(gfx);
+	}
+
+	if (isGameOver) {
+		SpriteCodex::DrawGameOver(Vec2(410.0f, 290.0f), gfx);
 	}
 }
