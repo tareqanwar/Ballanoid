@@ -61,3 +61,8 @@ RectF Ball::GetRect() const
 {
 	return RectF::FormCenter(position, radius, radius);
 }
+
+Vec2 Ball::GetVelocity() const
+{
+	return velocity;
+}
