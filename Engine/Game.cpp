@@ -33,7 +33,7 @@ Game::Game(MainWindow& wnd)
 {
 	const Color colors[4] = { Colors::Red, Colors::Green, Colors::Blue, Colors::Cyan };
 
-	const Vec2 topLeft(0.0f, 0.0f);
+	const Vec2 topLeft(40.0f, 40.0f);
 
 	int i = 0;
 
@@ -67,11 +67,31 @@ void Game::UpdateModel( )
 
 	ball.Update(dt);
 
-	for (Brick& brick : bricks) {
-		if (brick.DoBallCollision(ball)) {
-			soundPad.Play();
-			break;
+	bool collissionHappened = false;
+	float currentCollissionDistanceSq;
+	int currentCollissionIndex;
+
+	for (int i = 0; i < nBricks; i++) {
+		if (bricks[i].CheckBallCollision(ball)) {
+			const float newCollisionDistanceSq = (ball.GetPosition() - bricks[i].GetCenter()).GetLengthSq();
+
+			if (collissionHappened) {
+				if (newCollisionDistanceSq < currentCollissionDistanceSq) {
+					currentCollissionDistanceSq = newCollisionDistanceSq;
+					currentCollissionIndex = i;
+				}
+			}
+			else {
+				currentCollissionDistanceSq = newCollisionDistanceSq;
+				currentCollissionIndex = i;
+				collissionHappened = true;
+			}
 		}
+	}
+
+	if (collissionHappened) {
+		bricks[currentCollissionIndex].ExecuteBallCollision(ball);
+		soundPad.Play();
 	}
 
 	if (ball.DoWallCollision(walls)) {

@@ -66,3 +66,8 @@ Vec2 Ball::GetVelocity() const
 {
 	return velocity;
 }
+
+Vec2 Ball::GetPosition() const
+{
+	return position;
+}
