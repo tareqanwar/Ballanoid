@@ -27,10 +27,12 @@ bool Paddle::DoBallCollision(Ball& ball)
 		if (rect.IsOverlappingWith(ball.GetRect())) {
 			const Vec2 ballPosition = ball.GetPosition();
 
-			if (std::signbit(ball.GetVelocity().x) == std::signbit((ballPosition - position).x))
-				ball.ReboundY();
-			else if (ballPosition.x >= rect.left && ballPosition.x <= rect.right)
-				ball.ReboundY();
+			if (std::signbit(ball.GetVelocity().x) == std::signbit((ballPosition - position).x)
+				|| (ballPosition.x >= rect.left && ballPosition.x <= rect.right)) {
+				const float xDifference = ballPosition.x - position.x;
+				const Vec2 direction(xDifference * exitXFactor, -1.0f);
+				ball.SetDirection(direction);
+			}
 			else
 				ball.ReboundX();
 
